@@ -1,4 +1,4 @@
-// js/app.js - BẢN FIX TỰ ĐỘNG NHẬN DIỆN TÊN USER
+// js/app.js - BẢN ĐỒNG BỘ ONLINE (REALTIME)
 
 const coinSound = new Audio('js/tien.mp3'); 
 
@@ -7,22 +7,46 @@ const App = {
     myName: null,
 
     init: function() {
-        console.log("App starting...");
-        this.loadData();
+        console.log("App starting online mode...");
         this.bindEvents();
+        // Không loadData() thủ công nữa, mà lắng nghe realtime
+        this.listenRealtime();
     },
 
-    loadData: function() {
-        const storedData = localStorage.getItem('quyden_vip_data');
-        if (storedData) {
-            this.data = JSON.parse(storedData);
-        } else {
-            this.data = [];
-        }
+    // --- HÀM MỚI: LẮNG NGHE DỮ LIỆU TỪ MÂY ---
+    listenRealtime: function() {
+        const dbRef = firebase.database().ref('transactions');
+        
+        // Bất cứ khi nào dữ liệu trên mây thay đổi, hàm này sẽ chạy
+        dbRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Firebase trả về object, ta đổi sang mảng để dễ xử lý
+                this.data = Object.values(data);
+                
+                // Sắp xếp lại: Cái mới nhất (thời gian lớn nhất) lên đầu
+                this.data.sort((a, b) => b.d - a.d);
+            } else {
+                this.data = [];
+            }
+            
+            // Vẽ lại giao diện ngay lập tức
+            if (this.myName) { // Chỉ vẽ nếu đã đăng nhập
+                this.render();
+            }
+        });
     },
 
-    saveData: function() {
-        localStorage.setItem('quyden_vip_data', JSON.stringify(this.data));
+    // --- HÀM MỚI: ĐẨY DỮ LIỆU LÊN MÂY ---
+    pushToCloud: function(item) {
+        // Đẩy 1 item mới lên (dùng push để tạo ID ngẫu nhiên không trùng)
+        firebase.database().ref('transactions').push(item, (error) => {
+            if (error) {
+                alert("Lỗi mạng! Không lưu được: " + error);
+            } else {
+                console.log("Đã lưu lên mây thành công!");
+            }
+        });
     },
 
     handleLogin: function() {
@@ -43,6 +67,7 @@ const App = {
                 gsap.from(appEl, { opacity: 0, scale: 0.9, duration: 0.5 });
             }
 
+            // Gọi render ngay để hiện dữ liệu (nếu đã load xong từ trước)
             this.render();
             errorMsg.innerText = "";
         } else {
@@ -52,31 +77,23 @@ const App = {
         }
     },
 
-    // --- HÀM TÍNH TOÁN ĐƯỢC SỬA LẠI ĐỂ KHÔNG PHỤ THUỘC VÀO TÊN A HAY B ---
     render: function() {
         let total = 0, myTotal = 0;
-        
-        // Lấy tên 2 user từ file config Auth ra (Thái, Phúc...)
         const user1 = Auth.users[0].username;
         const user2 = Auth.users[1].username;
-
         let totalUser1 = 0;
         let totalUser2 = 0;
 
         this.data.forEach(item => {
             total += item.a;
-            
-            // So sánh động: Nếu item này của user1 thì cộng cho user1, user2 thì cộng user2
             if(item.u === user1) totalUser1 += item.a;
             if(item.u === user2) totalUser2 += item.a;
-            
             if(item.u === this.myName) myTotal += item.a;
         });
 
         UI.renderHistory(this.data, this.myName);
         UI.updateStats(total, myTotal);
 
-        // Trả về object chứa tên và số tiền cụ thể
         return { 
             [user1]: totalUser1, 
             [user2]: totalUser2,
@@ -91,11 +108,19 @@ const App = {
         const amount = parseInt(amtIn.value);
 
         if (amount && noteIn.value) {
-            this.data.unshift({ u: this.myName, a: amount, n: noteIn.value, d: Date.now() });
-            this.saveData();
+            // Tạo object item mới
+            const newItem = { 
+                u: this.myName, 
+                a: amount, 
+                n: noteIn.value, 
+                d: Date.now() 
+            };
+
+            // Gửi lên mây (Không cần this.data.unshift thủ công nữa, Firebase sẽ báo về sau)
+            this.pushToCloud(newItem);
+
             this.playSound();
             UI.makeItRain();
-            this.render();
             
             amtIn.value = '';
             noteIn.value = '';
@@ -109,19 +134,13 @@ const App = {
         }
     },
 
-    // --- HÀM CHỐT SỔ CŨNG ĐƯỢC SỬA LẠI ---
     settle: function() {
         const totals = this.render();
-        
-        // Lấy tên 2 ông
-        const u1 = totals.user1Name; // Ví dụ: Thái
-        const u2 = totals.user2Name; // Ví dụ: Phúc
-        
-        // Lấy tổng tiền 2 ông
+        const u1 = totals.user1Name;
+        const u2 = totals.user2Name;
         const t1 = totals[u1]; 
         const t2 = totals[u2];
 
-        // Tính chênh lệch: (Tiền ông 1 - Tiền ông 2)
         const diff = t1 - t2; 
         const pay = Math.abs(diff) / 2;
         const resEl = document.getElementById('settle-result');
@@ -129,17 +148,11 @@ const App = {
         if (diff === 0) {
             resEl.innerHTML = "HÒA TIỀN! CẢ NHÀ CÙNG VUI.";
         } else {
-            // Nếu diff > 0 (Ông 1 chi nhiều hơn) -> Ông 2 phải trả (Payer = u2)
-            // Nếu diff < 0 (Ông 2 chi nhiều hơn) -> Ông 1 phải trả (Payer = u1)
             const payer = diff > 0 ? u2 : u1;
             const receiver = diff > 0 ? u1 : u2;
             
-            // Logic chọn ảnh QR: Nếu người nhận là user đầu tiên trong danh sách (Index 0) thì lấy qr_a
-            // Ngược lại lấy qr_b
-            // Lưu ý: User 1 (Thái) sẽ ứng với qr_a.jpg, User 2 (Phúc) ứng với qr_b.jpg
             const isReceiverUser1 = (receiver === Auth.users[0].username);
             const qrImage = isReceiverUser1 ? 'images/qr_a.jpg' : 'images/qr_b.jpg';
-
             const color = diff > 0 ? '#ec4899' : '#3b82f6';
             
             resEl.innerHTML = `
@@ -148,7 +161,6 @@ const App = {
                 <div style="font-size: 32px; font-weight: 900; color: ${color}; margin: 15px 0;">
                     ${pay.toLocaleString()} đ
                 </div>
-                
                 <div style="margin: 10px auto; width: 200px; height: 200px; background: white; padding: 10px; border-radius: 10px;">
                     <img src="${qrImage}" style="width: 100%; height: 100%; object-fit: contain;" alt="QR Code">
                 </div>
