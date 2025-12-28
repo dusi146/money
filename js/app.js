@@ -134,6 +134,7 @@ const App = {
         }
     },
 
+    // --- CẬP NHẬT LẠI HÀM SETTLE ---
     settle: function() {
         const totals = this.render();
         const u1 = totals.user1Name;
@@ -146,7 +147,16 @@ const App = {
         const resEl = document.getElementById('settle-result');
 
         if (diff === 0) {
-            resEl.innerHTML = "HÒA TIỀN! CẢ NHÀ CÙNG VUI.";
+            resEl.innerHTML = `
+                <div style="font-size: 24px; margin-bottom: 15px;">🤝</div>
+                HÒA TIỀN! CẢ NHÀ CÙNG VUI.
+                <br>Không ai nợ ai đồng nào.
+                <div style="margin-top: 20px;">
+                    <button class="btn-main" onclick="App.resetData()" style="background: #333; font-size: 14px;">
+                        🧹 Xóa lịch sử làm ván mới
+                    </button>
+                </div>
+            `;
         } else {
             const payer = diff > 0 ? u2 : u1;
             const receiver = diff > 0 ? u1 : u2;
@@ -161,16 +171,39 @@ const App = {
                 <div style="font-size: 32px; font-weight: 900; color: ${color}; margin: 15px 0;">
                     ${pay.toLocaleString()} đ
                 </div>
+                
                 <div style="margin: 10px auto; width: 200px; height: 200px; background: white; padding: 10px; border-radius: 10px;">
                     <img src="${qrImage}" style="width: 100%; height: 100%; object-fit: contain;" alt="QR Code">
                 </div>
-                <small style="display:block; margin-top:5px">Quét mã trả luôn cho nóng!</small>
+                <small style="display:block; margin-top:5px; color: #ccc;">Quét mã trả luôn cho nóng!</small>
+
+                <div style="margin-top: 25px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                    <p style="font-size: 13px; margin-bottom: 10px; opacity: 0.8;">Sau khi chuyển khoản xong, bấm nút dưới để xóa sổ:</p>
+                    <button class="btn-main" onclick="App.resetData()" style="background: #1f2937; border: 1px solid rgba(255,255,255,0.2);">
+                        🗑️ ĐÃ THANH TOÁN & RESET
+                    </button>
+                </div>
             `;
         }
         
         UI.showModal();
     },
-
+// --- HÀM MỚI: XÓA SẠCH DỮ LIỆU TRÊN FIREBASE ---
+    resetData: function() {
+        // Hỏi lại cho chắc kẻo bấm nhầm
+        if (confirm("⚠️ CẢNH BÁO QUAN TRỌNG ⚠️\n\nBạn có chắc chắn là MỌI NGƯỜI ĐÃ THANH TOÁN XONG HẾT chưa?\n\nHành động này sẽ XÓA SẠCH toàn bộ lịch sử chi tiêu hiện tại để bắt đầu chu kỳ mới.\nKhông thể khôi phục lại được đâu nhé!")) {
+            
+            // Lệnh xóa thần thánh trên Firebase
+            firebase.database().ref('transactions').remove()
+                .then(() => {
+                    alert("🧹 Đã dọn dẹp sạch sẽ! Sẵn sàng cho chu kỳ mới.");
+                    UI.closeModal(); // Đóng bảng thông báo
+                })
+                .catch((error) => {
+                    alert("Lỗi không xóa được: " + error);
+                });
+        }
+    },
     playSound: function() {
         coinSound.currentTime = 0;
         coinSound.play().catch(() => console.log('Chưa tương tác user nên chưa play audio được'));
@@ -201,3 +234,4 @@ const App = {
 document.addEventListener('DOMContentLoaded', () => {
     App.init();
 });
+
