@@ -2,7 +2,7 @@ const Auth = {
     // Danh sách user được phép vào (Database chạy bằng cơm)
     users: [
         { username: 'pdt146', password: 'pdt2006@', name: 'duvansi' },
-        { username: 'nhp2006', password: 'nhp2006@', name: 'MessPhuc' }
+        { username: 'nhp2006', password: '2006', name: 'MessPhuc' }
     ],
 
     currentUser: null,
@@ -22,4 +22,5 @@ const Auth = {
     getUser: function() {
         return this.currentUser;
     }
+
 };
