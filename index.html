@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sổ Nợ Roommate VIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="neon-orb orb-1"></div>
+    <div class="neon-orb orb-2"></div>
+
+    <div id="login-screen">
+        <div class="glass" style="width: 90%; max-width: 350px; text-align: center; padding: 40px 20px;">
+            <h2 style="margin-bottom: 30px; color: var(--accent);">Đăng Nhập Tài Khoản</h2>
+            
+            <input type="text" id="login-user" placeholder="Tên người dùng (A hoặc B)" style="text-align: center;">
+            <input type="password" id="login-pass" placeholder="Mật mã bí mật" style="text-align: center;">
+            
+            <button class="btn-main" onclick="App.handleLogin()" style="margin-top: 10px;">
+                MỞ KÉT SẮT
+            </button>
+            <p id="login-error" style="color: #ef4444; margin-top: 15px; font-size: 14px; min-height: 20px;"></p>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        
+        <header>...</header>
+        <div class="stats-grid">...</div>
+        </div>
+
+    </body>
+<body>
+
+    <div class="neon-orb orb-1"></div>
+    <div class="neon-orb orb-2"></div>
+
+    <div id="app">
+        <header>
+            <div style="font-size: 18px; font-weight: 800;">
+                💸 QUẢN LÝ QUỸ ĐEN
+            </div>
+            <div class="theme-switch">
+                <button class="theme-btn active" onclick="UI.setTheme('neon')" title="Neon"><i class="fas fa-bolt"></i></button>
+                <button class="theme-btn" onclick="UI.setTheme('light')" title="Sáng"><i class="fas fa-sun"></i></button>
+                <button class="theme-btn" onclick="UI.setTheme('dark')" title="Tối"><i class="fas fa-moon"></i></button>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+    
+    <div class="stat-card glass" style="--theme-color: #ec4899;">
+        <h3>Tổng Thiệt Hại</h3>
+        <div class="value" id="total-spent" style="color: var(--theme-color); text-shadow: 0 0 15px var(--theme-color);">0 đ</div>
+    </div>
+
+    <div class="stat-card glass" style="--theme-color: #38bdf8;">
+        <h3>Tao Đã Chi</h3>
+        <div class="value" id="my-spent" style="color: var(--theme-color); text-shadow: 0 0 15px var(--theme-color);">0 đ</div>
+    </div>
+
+</div>
+
+        <div class="glass input-area">
+            <div class="troll-msg" id="troll-msg">Nhập tiền đi bạn êi...</div>
+            <input type="number" id="amount" placeholder="Nhập số tiền (VNĐ)">
+            <input type="text" id="note" placeholder="Nội dung (vd: Bao nuôi em gái)">
+            <button class="btn-main" id="add-btn">
+                <i class="fas fa-paper-plane"></i> Bơm Tiền Vào
+            </button>
+        </div>
+
+        <div class="glass" style="min-height: 300px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <h3 style="margin:0; color:var(--text-sub)">Lịch sử gần đây</h3>
+                <i class="fas fa-history" style="color:var(--text-sub)"></i>
+            </div>
+            <ul class="history-list" id="history-list">
+                </ul>
+        </div>
+
+        <button class="btn-main" id="settle-btn" style="margin-top: 20px; background: linear-gradient(90deg, #ef4444, #f87171);">
+            Kết thúc chu kì
+        </button>
+    </div>
+
+    <div id="modal-overlay">
+        <div class="glass modal-content" style="width: 90%; max-width: 320px; text-align: center;">
+            <h2 style="color: var(--accent); margin-top:0;">🎉 KẾT QUẢ 🎉</h2>
+            <div id="settle-result" style="font-size: 18px; line-height: 1.6; margin: 20px 0;"></div>
+            <button class="btn-main" onclick="UI.closeModal()" style="padding: 10px;">Đóng</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

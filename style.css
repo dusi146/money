@@ -1,0 +1,314 @@
+/* --- CẤU HÌNH THEME --- */
+:root {
+    /* Mặc định là NEON */
+    --bg-grad: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-main: #ffffff;
+    --text-sub: rgba(255, 255, 255, 0.7);
+    --primary: #3b82f6;
+    --accent: #ec4899;
+    --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --input-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Chế độ SÁNG */
+[data-theme="light"] {
+    --bg-grad: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --text-main: #1f2937;
+    --text-sub: #4b5563;
+    --primary: #2563eb;
+    --accent: #db2777;
+    --card-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    --input-bg: rgba(255, 255, 255, 0.8);
+}
+
+/* Chế độ TỐI */
+[data-theme="dark"] {
+    --bg-grad: linear-gradient(135deg, #111111 0%, #222222 100%);
+    --glass-bg: rgba(50, 50, 50, 0.4);
+    --glass-border: rgba(80, 80, 80, 0.3);
+    --text-main: #e5e5e5;
+    --text-sub: #a3a3a3;
+    --primary: #60a5fa;
+    --accent: #f472b6;
+    --card-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    --input-bg: rgba(0, 0, 0, 0.5);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: var(--bg-grad);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden;
+    transition: background 0.5s ease;
+}
+
+/* Hiệu ứng nền Neon */
+.neon-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: -1;
+    opacity: 0.6;
+    transition: opacity 0.5s;
+}
+[data-theme="light"] .neon-orb, [data-theme="dark"] .neon-orb { opacity: 0; }
+
+.orb-1 { width: 300px; height: 300px; background: var(--accent); top: -50px; left: -50px; animation: float 6s infinite alternate; }
+.orb-2 { width: 250px; height: 250px; background: var(--primary); bottom: -50px; right: -50px; animation: float 6s infinite alternate-reverse; }
+
+@keyframes float { 0% { transform: translate(0, 0); } 100% { transform: translate(30px, 30px); } }
+
+/* Layout */
+#app {
+    width: 100%;
+    max-width: 480px;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.theme-switch {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 5px;
+    display: flex;
+    gap: 5px;
+}
+
+.theme-btn {
+    border: none;
+    background: none;
+    color: var(--text-sub);
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.theme-btn.active {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 0 10px var(--primary);
+}
+
+/* Glass Cards */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    padding: 20px;
+    transition: 0.3s;
+}
+
+/* Stats Section */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+.stat-card h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 8px 0; color: var(--text-sub); }
+.stat-card .value { font-size: 22px; font-weight: 900; word-break: break-all; }
+
+/* Input Section */
+.input-area { position: relative; margin-bottom: 25px; }
+input {
+    width: 100%;
+    padding: 16px;
+    margin-bottom: 12px;
+    background: var(--input-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    color: var(--text-main);
+    font-size: 16px;
+    font-family: inherit;
+    transition: 0.3s;
+}
+input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); transform: scale(1.02); }
+
+/* Buttons */
+.btn-main {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: 0.3s;
+}
+.btn-main:active { transform: scale(0.95); }
+.btn-main::after {
+    content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: 0.5s;
+}
+.btn-main:hover::after { left: 100%; }
+
+/* Lịch sử */
+.history-list { list-style: none; padding: 0; margin: 0; }
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    animation: slideIn 0.4s ease-out;
+}
+@keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* Modal */
+#modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
+    z-index: 100;
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: 0.3s;
+}
+#modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+/* Tiền rơi */
+.money-rain {
+    position: fixed; top: -50px; z-index: 99;
+    font-size: 24px; pointer-events: none;
+    animation: fall linear forwards;
+}
+@keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+
+/* Text Bựa */
+.troll-msg {
+    text-align: center; font-size: 13px; font-style: italic; 
+    color: var(--accent); margin-bottom: 10px; min-height: 20px;
+}
+/* --- COPY ĐÈ VÀO FILE STYLE.CSS --- */
+
+.stat-card {
+    /* Cấu trúc cơ bản giữ nguyên */
+    background: rgba(255, 255, 255, 0.03); /* Nền kính mờ cơ bản */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 20px;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    /* --- PHẦN QUAN TRỌNG: CÂN BẰNG HIỆU ỨNG --- */
+    
+    /* 1. Viền: Dùng màu theme nhưng mờ đi 50% */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 3px solid var(--theme-color); /* Chân đậm màu theme */
+
+    /* 2. Hiệu ứng Glow bên trong (Inset shadow) */
+    box-shadow: 
+        0 10px 30px -10px rgba(0, 0, 0, 0.5), /* Bóng đen tạo độ sâu */
+        inset 0 0 20px -5px var(--theme-color); /* Bóng màu hắt từ trong ra (quan trọng) */
+}
+
+/* Hiệu ứng nền Gradient nhẹ khi ở trạng thái thường */
+.stat-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 0%, var(--theme-color) 100%);
+    opacity: 0.1; /* Độ đậm nhạt của màu nền (Chỉnh số này nếu muốn đậm hơn) */
+    z-index: -1;
+}
+
+/* Hiệu ứng khi di chuột vào (Hover) */
+.stat-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    /* Tăng độ phát sáng bên ngoài */
+    box-shadow: 
+        0 20px 40px -10px rgba(0, 0, 0, 0.6),
+        0 0 20px var(--theme-color); /* Phát sáng màu theme */
+    border-color: var(--theme-color);
+}
+
+.stat-card:hover::before {
+    opacity: 0.2; /* Hover vào thì nền đậm lên tí */
+}
+/* Tìm và sửa lại đoạn này trong style.css */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    /* Thêm dòng này: Ép các ô trong lưới phải dãn chiều cao bằng nhau */
+    align-items: stretch; 
+}
+
+.stat-card {
+    /* Thêm dòng này: Chiếm 100% chiều cao của ô chứa nó */
+    height: 100%;
+    
+    /* Các thuộc tính cũ giữ nguyên */
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    /* ... */
+}
+/* --- THÊM VÀO CUỐI FILE STYLE.CSS --- */
+
+/* Class để ẩn thành phần */
+.hidden {
+    display: none !important;
+}
+
+/* Màn hình Login full màn hình */
+#login-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 9999; /* Luôn nằm trên cùng */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-grad); /* Ăn theo màu nền hiện tại */
+}
+
+/* Hiệu ứng rung lắc khi nhập sai pass */
+.shake {
+    animation: shake 0.5s;
+}
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-10px); }
+    100% { transform: translateX(0); }
+}
